@@ -114,12 +114,16 @@ assert tomlkit.__version__ == '0.12.0', tomlkit.__version__"
 # inspection: the wheel carries 496 St8optional symbols and zero c10 ones.
 #
 # This .so is the binary that has served every successful job — compiled from
-# ops/src against torch 2.1.1, and carrying 3245 c10::optional symbols. It rides
-# along in the overlay, so no nvcc run is needed at build time and the artefact is
-# bit-identical to the one in production rather than a fresh guess at it.
-RUN cp /app/models/GroundingDINO/ops/build/lib.linux-x86_64-cpython-310/MultiScaleDeformableAttention.cpython-310-x86_64-linux-gnu.so \
-       /usr/local/lib/python3.10/dist-packages/ \
-    && python -c "import MultiScaleDeformableAttention as m; print('MSDA extension loads against', __import__('torch').__version__)"
+# ops/src against torch 2.1.1, and carrying 3245 c10::optional symbols. Shipping
+# it means no nvcc pass at build time and an artefact bit-identical to the one in
+# production rather than a fresh guess at it.
+#
+# It lives in msda/ rather than under ops/build/ because the HF space's own
+# .gitignore excludes `models/GroundingDINO/ops/build/` — which silently kept the
+# file out of the first push and made this step fail with a missing source path.
+COPY msda/MultiScaleDeformableAttention.cpython-310-x86_64-linux-gnu.so \
+     /usr/local/lib/python3.10/dist-packages/
+RUN python -c "import MultiScaleDeformableAttention; print('MSDA extension loads against torch', __import__('torch').__version__)"
 
 # Import the handler's whole dependency graph at build time, so a missing module
 # or a bad pin surfaces here rather than as a 250-second timeout in the app. The
