@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Switch RunPod endpoint oczn63esmtysqm between the two templates and measure.
+# Switch a RunPod serverless endpoint between the two templates and measure.
+#
+# Required env: RUNPOD_ENDPOINT_ID, RUNPOD_OLD_TEMPLATE, RUNPOD_NEW_TEMPLATE,
+# RUNPOD_VOLUME_ID (rollback only). The API key is read from ~/.runpod-key.
 #
 #   ./switch-endpoint.sh baked     -> the new self-contained image, no volume
 #   ./switch-endpoint.sh rollback  -> the original volume-based template
@@ -9,9 +12,9 @@
 # given a read:packages credential). Switching before then leaves workers unable
 # to pull, so `baked` refuses to run until the image is reachable anonymously.
 set -euo pipefail
-EP=oczn63esmtysqm
-OLD_TEMPLATE=nakg84aofh      # runpod/pytorch + network volume 0we7ub4z01
-NEW_TEMPLATE=kfpdzxd8r6      # ghcr.io/umairkhalidsidd1/countgd-worker:latest
+EP=${RUNPOD_ENDPOINT_ID:?set RUNPOD_ENDPOINT_ID}
+OLD_TEMPLATE=${RUNPOD_OLD_TEMPLATE:?set RUNPOD_OLD_TEMPLATE}   # runpod/pytorch + network volume
+NEW_TEMPLATE=${RUNPOD_NEW_TEMPLATE:?set RUNPOD_NEW_TEMPLATE}   # the baked image template
 IMAGE=ghcr.io/umairkhalidsidd1/countgd-worker:latest
 KEY=$(tr -d '\n' < ~/.runpod-key)
 
@@ -43,7 +46,7 @@ case "${1:-}" in
     echo "switched to the baked image (no network volume)"
     ;;
   rollback)
-    api PATCH "/endpoints/$EP" "{\"templateId\":\"$OLD_TEMPLATE\",\"networkVolumeId\":\"0we7ub4z01\"}" >/dev/null
+    api PATCH "/endpoints/$EP" "{\"templateId\":\"$OLD_TEMPLATE\",\"networkVolumeId\":\"${RUNPOD_VOLUME_ID:?set RUNPOD_VOLUME_ID}\"}" >/dev/null
     echo "rolled back to the volume-based template"
     ;;
   measure)

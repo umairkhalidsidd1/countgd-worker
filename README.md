@@ -1,7 +1,6 @@
 # countgd-worker
 
-Serverless worker image for the CountThis counting backend (RunPod endpoint
-`oczn63esmtysqm`).
+Serverless worker image for the CountThis counting backend (a RunPod serverless endpoint).
 
 ## Why this repo exists
 
