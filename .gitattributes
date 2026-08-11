@@ -1,0 +1,4 @@
+# The overlay carries only source and small wheels; weights come from the HF
+# space at build time, so nothing here needs LFS.
+* text=auto eol=lf
+*.whl binary

@@ -1,0 +1,398 @@
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/functional.py:507: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3549.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+Some weights of BertModel were not initialized from the model checkpoint at checkpoints/bert-base-uncased and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/functional.py:507: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3549.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+Some weights of BertModel were not initialized from the model checkpoint at checkpoints/bert-base-uncased and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+final text_encoder_type: checkpoints/bert-base-uncased
+load tokenizer done.
+final text_encoder_type: checkpoints/bert-base-uncased
+load tokenizer done.
+Running on local URL:  http://127.0.0.1:7860
+Traceback (most recent call last):
+  File "/home/niki/gradio-tutorial/app.py", line 230, in <module>
+    demo.launch(share=True, allowed_paths=['teaser-gradio.jpg'])
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/gradio/blocks.py", line 2441, in launch
+    share_url = networking.setup_tunnel(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/gradio/networking.py", line 31, in setup_tunnel
+    response = httpx.get(GRADIO_API_SERVER, timeout=30)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_api.py", line 198, in get
+    return request(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_api.py", line 106, in request
+    return client.request(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_client.py", line 827, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_client.py", line 1015, in _send_single_request
+    response = transport.handle_request(request)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpx/_transports/default.py", line 233, in handle_request
+    resp = self._pool.handle_request(req)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpcore/_sync/connection_pool.py", line 216, in handle_request
+    raise exc from None
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpcore/_sync/connection_pool.py", line 196, in handle_request
+    response = connection.handle_request(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpcore/_sync/connection.py", line 99, in handle_request
+    raise exc
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpcore/_sync/connection.py", line 76, in handle_request
+    stream = self._connect(request)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpcore/_sync/connection.py", line 154, in _connect
+    stream = stream.start_tls(**kwargs)
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/httpcore/_backends/sync.py", line 163, in start_tls
+    sock = ssl_context.wrap_socket(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/ssl.py", line 501, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/ssl.py", line 1074, in _create
+    self.do_handshake()
+  File "/home/niki/anaconda3/envs/gradio/lib/python3.9/ssl.py", line 1343, in do_handshake
+    self._sslobj.do_handshake()
+KeyboardInterrupt
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/functional.py:507: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3549.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+final text_encoder_type: checkpoints/bert-base-uncased
+load tokenizer done.
+Some weights of BertModel were not initialized from the model checkpoint at checkpoints/bert-base-uncased and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+final text_encoder_type: checkpoints/bert-base-uncased
+load tokenizer done.
+Running on local URL:  http://127.0.0.1:7860
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+Running on public URL: https://ffc289d2866c212c8b.gradio.live
+
+This share link expires in 72 hours. For free permanent hosting and GPU upgrades, run `gradio deploy` from Terminal to deploy to Spaces (https://huggingface.co/spaces)
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'cat', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'sign', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'cushion', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'cupboard', '##s', '.', '[SEP]']
+[0, 1, 2, 3, 4]
+torch.Size([900, 256])
+torch.Size([900, 5])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'laptop', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'finger', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'bird', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'dog', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[[712.0, 192.0, 876.0, 368.0]]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[659.0945, 177.7778, 810.9083, 340.7407]], device='cuda:0')]
+1
+tensor([[ 101, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', '.', '[SEP]']
+[0, 1, 2]
+torch.Size([900, 256])
+torch.Size([900, 3])
+[[712.0, 192.0, 876.0, 368.0], [525.0, 438.0, 631.0, 517.0], [918.0, 377.0, 1028.0, 474.0]]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[659.0945, 177.7778, 810.9083, 340.7407],
+        [485.9896, 405.5555, 584.1132, 478.7037],
+        [849.7875, 349.0741, 951.6139, 438.8889]], device='cuda:0')]
+3
+tensor([[ 101, 1008, 1008, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', '.', '[SEP]']
+[0, 1, 2]
+torch.Size([900, 256])
+torch.Size([900, 3])
+[[712.0, 192.0, 876.0, 368.0], [525.0, 438.0, 631.0, 517.0], [918.0, 377.0, 1028.0, 474.0]]
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/transformers/modeling_utils.py:977: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/niki/anaconda3/envs/gradio/lib/python3.9/site-packages/torch/utils/checkpoint.py:90: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[659.0945, 177.7778, 810.9083, 340.7407],
+        [485.9896, 405.5555, 584.1132, 478.7037],
+        [849.7875, 349.0741, 951.6139, 438.8889]], device='cuda:0')]
+3
+tensor([[ 101, 3899, 1008, 1008, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', 'dog', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/functional.py:512: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3587.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+final text_encoder_type: checkpoints/bert-base-uncased
+load tokenizer done.
+Some weights of BertModel were not initialized from the model checkpoint at checkpoints/bert-base-uncased and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+final text_encoder_type: checkpoints/bert-base-uncased
+load tokenizer done.
+Running on local URL:  http://127.0.0.1:7860
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+Running on public URL: https://5899ead67713f124a4.gradio.live
+
+This share link expires in 72 hours. For free permanent hosting and GPU upgrades, run `gradio deploy` from Terminal to deploy to Spaces (https://huggingface.co/spaces)
+state: [<AppSteps.JUST_TEXT: 1>]
+[]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+['[CLS]', 'strawberry', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+state: [<AppSteps.JUST_TEXT: 1>, <AppSteps.TEXT_AND_EXEMPLARS: 2>]
+[[161.0, 69.0, 205.0, 127.0]]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[335.3581, 143.7500, 427.0087, 264.5833]], device='cuda:0')]
+1
+tensor([[  101, 16876,  1008,  1012,   102]], device='cuda:0')
+['[CLS]', 'strawberry', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'fish', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[[382.0, 14.0, 476.0, 60.0]]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[570.8486,  20.9346, 711.3192,  89.7196]], device='cuda:0')]
+1
+tensor([[ 101, 3869, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', 'fish', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[[382.0, 14.0, 476.0, 60.0], [320.0, 410.0, 447.0, 475.0]]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[570.8486,  20.9346, 711.3192,  89.7196],
+        [478.1978, 613.0841, 667.9825, 710.2804]], device='cuda:0')]
+2
+tensor([[ 101, 3869, 1008, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', 'fish', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'deer', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[[181.0, 51.0, 266.0, 131.0]]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[376.7822, 106.2500, 553.7242, 272.9167]], device='cuda:0')]
+1
+tensor([[ 101, 8448, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', 'deer', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+[[181.0, 51.0, 266.0, 131.0]]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[376.7822, 106.2500, 553.7242, 272.9167]], device='cuda:0')]
+1
+tensor([[ 101, 8448, 1008, 1012,  102]], device='cuda:0')
+['[CLS]', 'deer', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+state: [<AppSteps.JUST_TEXT: 1>]
+[]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([], device='cuda:0')]
+0
+['[CLS]', 'strawberry', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
+state: [<AppSteps.JUST_TEXT: 1>, <AppSteps.TEXT_AND_EXEMPLARS: 2>]
+[[153.0, 75.0, 212.0, 141.0]]
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/transformers/modeling_utils.py:1052: FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:464: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/scratch/shared/beegfs/nikian/anaconda/envs/countgd-app/lib/python3.9/site-packages/torch/utils/checkpoint.py:91: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+[tensor([[318.6943, 156.2500, 441.5895, 293.7500]], device='cuda:0')]
+1
+tensor([[  101, 16876,  1008,  1012,   102]], device='cuda:0')
+['[CLS]', 'strawberry', '.', '[SEP]']
+[0, 1, 2, 3]
+torch.Size([900, 256])
+torch.Size([900, 4])
