@@ -62,12 +62,18 @@ COPY overlay/ /app/
 # those modules are never reached from the handler, so adding them would be
 # guesswork rather than reproduction.
 #
-# opencv is also absent, and that is not an oversight. The venv lists
-# opencv-python==5.0.0.93, which requires numpy>=2 — impossible next to the
-# numpy 1.26.4 that torch 2.1 demands, so `import cv2` cannot ever have succeeded
-# there. It only appears in util/visualizer.py, util/vis_utils.py and the
-# groundingdino visualiser/inference helpers, none of which app.py reaches. pip
-# refuses to resolve the pair in one pass, which is what surfaced this.
+# opencv IS required, contrary to a first reading of the import graph.
+# models/GroundingDINO/groundingdino.py line 45 does
+# `from groundingdino.util.visualizer import COCOVisualizer`, and that module
+# imports cv2 — so cv2 sits squarely on the handler's path and the worker dies
+# with ModuleNotFoundError without it. It is reached only from inside
+# build_model_and_transforms, which is why `import app` alone looks clean.
+#
+# headless 4.10, not the venv's opencv-python==5.0.0.93: that release declares
+# numpy>=2, which cannot coexist with the numpy 1.26.4 torch 2.1 needs, so pip
+# will not resolve the pair. headless exposes the same cv2 API, needs no libGL,
+# and cv2 is only imported here to satisfy a class definition (COCOVisualizer)
+# that this inference path never instantiates.
 #
 # Three passes, not one, and the ORDER is the point. gradio 4.44.1 pins
 # tomlkit==0.12.0 while runpod 1.11.0 asks for tomlkit>=0.15.1, so a single
@@ -93,6 +99,7 @@ RUN python -m pip install --upgrade pip \
         "pandas==2.3.3" \
         "termcolor==3.3.0" \
         "colorlog==6.12.0" \
+        "opencv-python-headless==4.10.0.84" \
         "gradio==4.44.1" \
         "gradio_client==1.3.0" \
     && python -m pip install \
@@ -130,11 +137,21 @@ COPY msda/MultiScaleDeformableAttention.cpython-310-x86_64-linux-gnu.so \
 RUN python -c "import torch; import MultiScaleDeformableAttention; \
 print('MSDA extension loads against torch', torch.__version__)"
 
-# Import the handler's whole dependency graph at build time, so a missing module
-# or a bad pin surfaces here rather than as a 250-second timeout in the app. The
-# model itself needs CUDA to move to the GPU, so only the import is checked.
-RUN python -c "import app; \
+# Walk the FULL import graph, including the modules that
+# build_model_and_transforms defers until it is called.
+#
+# The previous version of this check only did `import app` plus an attribute
+# lookup, and it passed green while the image was fatally broken: cv2 was missing
+# and `from models.registry import MODULE_BUILD_FUNCS` happens inside the function
+# body, so nothing at build time ever touched it. The workers went unhealthy in
+# production instead. Importing models.registry and the groundingdino visualiser
+# here is exactly what that check should always have done. Building the model
+# itself still needs a GPU, so that stays a runtime concern.
+RUN python -c "import torch, app, cv2; \
+import models.registry, models.GroundingDINO, groundingdino.util.visualizer, groundingdino.util.inference; \
+import datasets.transforms; \
 [getattr(app, n) for n in ('get_args_parser','get_device','build_model_and_transforms','predict','get_xy_from_boxes','generate_heatmap')]; \
-print('app.py imports clean, all six handler entry points present')"
+assert models.registry.MODULE_BUILD_FUNCS is not None; \
+print('full import graph clean: app + models.registry + groundingdino visualiser/inference + cv2', cv2.__version__)"
 
 CMD ["python", "-u", "rp_handler.py"]
