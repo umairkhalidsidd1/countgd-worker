@@ -147,8 +147,13 @@ print('MSDA extension loads against torch', torch.__version__)"
 # production instead. Importing models.registry and the groundingdino visualiser
 # here is exactly what that check should always have done. Building the model
 # itself still needs a GPU, so that stays a runtime concern.
+#
+# groundingdino.util.inference is deliberately NOT imported: nothing in this fork
+# imports it, and it pulls `supervision`, which the proven venv does not have. The
+# check must mirror the real import graph, not every file that happens to sit in
+# the checkout — otherwise it demands dependencies production never needed.
 RUN python -c "import torch, app, cv2; \
-import models.registry, models.GroundingDINO, groundingdino.util.visualizer, groundingdino.util.inference; \
+import models.registry, models.GroundingDINO, groundingdino.util.visualizer; \
 import datasets.transforms; \
 [getattr(app, n) for n in ('get_args_parser','get_device','build_model_and_transforms','predict','get_xy_from_boxes','generate_heatmap')]; \
 assert models.registry.MODULE_BUILD_FUNCS is not None; \
