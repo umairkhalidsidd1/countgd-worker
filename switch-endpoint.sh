@@ -15,24 +15,32 @@ set -euo pipefail
 EP=${RUNPOD_ENDPOINT_ID:?set RUNPOD_ENDPOINT_ID}
 OLD_TEMPLATE=${RUNPOD_OLD_TEMPLATE:?set RUNPOD_OLD_TEMPLATE}   # runpod/pytorch + network volume
 NEW_TEMPLATE=${RUNPOD_NEW_TEMPLATE:?set RUNPOD_NEW_TEMPLATE}   # the baked image template
-IMAGE=ghcr.io/umairkhalidsidd1/countgd-worker:latest
+IMAGE=ghcr.io/umairkhalidsidd1/countgd:latest
 KEY=$(tr -d '\n' < ~/.runpod-key)
 
-api() { # api <METHOD> <path> [json]
-  curl -sS -X "$1" "https://rest.runpod.io/v1$2" \
+api() { # api <METHOD> <path> [json] — fails loudly on a non-2xx
+  local out code
+  out=$(curl -sS -X "$1" "https://rest.runpod.io/v1$2" \
     -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
-    -H 'User-Agent: curl/8.4.0' ${3:+-d "$3"}
+    -H 'User-Agent: curl/8.4.0' ${3:+-d "$3"} -w '\n%{http_code}')
+  code=${out##*$'\n'}
+  out=${out%$'\n'*}
+  if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+    echo "API $1 $2 -> HTTP $code: ${out:0:300}" >&2
+    return 1
+  fi
+  printf '%s' "$out"
 }
 
 pullable() { # is the image anonymously pullable?
   local tok
-  tok=$(curl -sS "https://ghcr.io/token?scope=repository:umairkhalidsidd1/countgd-worker:pull&service=ghcr.io" \
+  tok=$(curl -sS "https://ghcr.io/token?scope=repository:umairkhalidsidd1/countgd:pull&service=ghcr.io" \
         | python3 -c 'import json,sys;print(json.load(sys.stdin).get("token",""))' 2>/dev/null || true)
   [ -n "$tok" ] || return 1
   curl -sS -o /dev/null -w '%{http_code}' \
     -H "Authorization: Bearer $tok" \
-    -H 'Accept: application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json' \
-    "https://ghcr.io/v2/umairkhalidsidd1/countgd-worker/manifests/latest" | grep -q '^200$'
+    -H 'Accept: application/vnd.oci.image.manifest.v1+json,application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.v2+json' \
+    "https://ghcr.io/v2/umairkhalidsidd1/countgd/manifests/latest" | grep -q '^200$'
 }
 
 case "${1:-}" in
@@ -42,7 +50,10 @@ case "${1:-}" in
       echo "Make the ghcr package public, or add a read:packages credential to RunPod." >&2
       exit 1
     fi
-    api PATCH "/endpoints/$EP" "{\"templateId\":\"$NEW_TEMPLATE\",\"networkVolumeId\":null}" >/dev/null
+    # Separate calls on purpose: sending both keys with networkVolumeId null is
+    # rejected (HTTP 400), and "" is the only value that actually detaches it.
+    api PATCH "/endpoints/$EP" "{\"templateId\":\"$NEW_TEMPLATE\"}" >/dev/null
+    api PATCH "/endpoints/$EP" '{"networkVolumeId":""}' >/dev/null
     echo "switched to the baked image (no network volume)"
     ;;
   rollback)
