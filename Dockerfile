@@ -123,7 +123,12 @@ assert tomlkit.__version__ == '0.12.0', tomlkit.__version__"
 # file out of the first push and made this step fail with a missing source path.
 COPY msda/MultiScaleDeformableAttention.cpython-310-x86_64-linux-gnu.so \
      /usr/local/lib/python3.10/dist-packages/
-RUN python -c "import MultiScaleDeformableAttention; print('MSDA extension loads against torch', __import__('torch').__version__)"
+# torch must be imported FIRST. The extension links against libc10.so, and it is
+# importing torch that puts torch/lib on the dynamic loader's path — on its own the
+# extension dies with "libc10.so: cannot open shared object file". The real code
+# gets this for free because app.py imports torch near the top.
+RUN python -c "import torch; import MultiScaleDeformableAttention; \
+print('MSDA extension loads against torch', torch.__version__)"
 
 # Import the handler's whole dependency graph at build time, so a missing module
 # or a bad pin surfaces here rather than as a 250-second timeout in the app. The
