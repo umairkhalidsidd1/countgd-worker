@@ -61,6 +61,13 @@ COPY overlay/ /app/
 # statements inside the checkout but are not installed in the working venv — proof
 # those modules are never reached from the handler, so adding them would be
 # guesswork rather than reproduction.
+#
+# opencv is also absent, and that is not an oversight. The venv lists
+# opencv-python==5.0.0.93, which requires numpy>=2 — impossible next to the
+# numpy 1.26.4 that torch 2.1 demands, so `import cv2` cannot ever have succeeded
+# there. It only appears in util/visualizer.py, util/vis_utils.py and the
+# groundingdino visualiser/inference helpers, none of which app.py reaches. pip
+# refuses to resolve the pair in one pass, which is what surfaced this.
 RUN python -m pip install --upgrade pip \
     && python -m pip install \
         "transformers==4.44.2" \
@@ -77,7 +84,6 @@ RUN python -m pip install --upgrade pip \
         "pandas==2.3.3" \
         "termcolor==3.3.0" \
         "colorlog==6.12.0" \
-        "opencv-python==5.0.0.93" \
         "gradio==4.44.1" \
         "gradio_client==1.3.0" \
         "runpod==1.11.0" \
