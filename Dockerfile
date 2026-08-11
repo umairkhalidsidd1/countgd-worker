@@ -68,7 +68,16 @@ COPY overlay/ /app/
 # there. It only appears in util/visualizer.py, util/vis_utils.py and the
 # groundingdino visualiser/inference helpers, none of which app.py reaches. pip
 # refuses to resolve the pair in one pass, which is what surfaced this.
+#
+# Three passes, not one, and the ORDER is the point. gradio 4.44.1 pins
+# tomlkit==0.12.0 while runpod 1.11.0 asks for tomlkit>=0.15.1, so a single
+# resolution is impossible — yet the working venv holds both, because they were
+# installed at different times and ended on tomlkit 0.12.0. runpod runs fine
+# against it; its declared floor is stricter than its real need. Installing runpod
+# first and letting gradio pull tomlkit back down to 0.12.0 lands on exactly the
+# freeze's final state.
 RUN python -m pip install --upgrade pip \
+    && python -m pip install "runpod==1.11.0" \
     && python -m pip install \
         "transformers==4.44.2" \
         "numpy==1.26.4" \
@@ -86,15 +95,16 @@ RUN python -m pip install --upgrade pip \
         "colorlog==6.12.0" \
         "gradio==4.44.1" \
         "gradio_client==1.3.0" \
-        "runpod==1.11.0" \
     && python -m pip install \
         /app/MultiScaleDeformableAttention-1.0-cp310-cp310-linux_x86_64.whl \
         /app/gradio_image_prompter-0.1.0-py3-none-any.whl \
     # Fail the BUILD, not the first user request, if the pinned set is broken.
-    && python -c "import torch, transformers, numpy, MultiScaleDeformableAttention as m; \
-print('torch', torch.__version__, 'transformers', transformers.__version__, 'numpy', numpy.__version__); \
+    && python -c "import torch, transformers, numpy, tomlkit, runpod, gradio, MultiScaleDeformableAttention as m; \
+print('torch', torch.__version__, 'transformers', transformers.__version__, \
+      'numpy', numpy.__version__, 'tomlkit', tomlkit.__version__); \
 assert torch.__version__.startswith('2.1.1'), torch.__version__; \
-assert numpy.__version__.startswith('1.'), numpy.__version__"
+assert numpy.__version__.startswith('1.'), numpy.__version__; \
+assert tomlkit.__version__ == '0.12.0', tomlkit.__version__"
 
 # Import the handler's whole dependency graph at build time, so a missing module
 # or a bad pin surfaces here rather than as a 250-second timeout in the app. The
