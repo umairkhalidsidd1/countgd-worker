@@ -96,15 +96,30 @@ RUN python -m pip install --upgrade pip \
         "gradio==4.44.1" \
         "gradio_client==1.3.0" \
     && python -m pip install \
-        /app/MultiScaleDeformableAttention-1.0-cp310-cp310-linux_x86_64.whl \
         /app/gradio_image_prompter-0.1.0-py3-none-any.whl \
     # Fail the BUILD, not the first user request, if the pinned set is broken.
-    && python -c "import torch, transformers, numpy, tomlkit, runpod, gradio, MultiScaleDeformableAttention as m; \
+    && python -c "import torch, transformers, numpy, tomlkit, runpod, gradio; \
 print('torch', torch.__version__, 'transformers', transformers.__version__, \
       'numpy', numpy.__version__, 'tomlkit', tomlkit.__version__); \
 assert torch.__version__.startswith('2.1.1'), torch.__version__; \
 assert numpy.__version__.startswith('1.'), numpy.__version__; \
 assert tomlkit.__version__ == '0.12.0', tomlkit.__version__"
+
+# The MultiScaleDeformableAttention CUDA extension.
+#
+# NOT the wheel that ships in the space. That wheel's .so is mangled with
+# `St8optional` (std::optional), i.e. it was compiled against a torch new enough
+# to have dropped c10::optional, and importing it under torch 2.1.1 dies with
+# `undefined symbol: _ZN2at4_ops10zeros_like4call...`. Verified by symbol
+# inspection: the wheel carries 496 St8optional symbols and zero c10 ones.
+#
+# This .so is the binary that has served every successful job — compiled from
+# ops/src against torch 2.1.1, and carrying 3245 c10::optional symbols. It rides
+# along in the overlay, so no nvcc run is needed at build time and the artefact is
+# bit-identical to the one in production rather than a fresh guess at it.
+RUN cp /app/models/GroundingDINO/ops/build/lib.linux-x86_64-cpython-310/MultiScaleDeformableAttention.cpython-310-x86_64-linux-gnu.so \
+       /usr/local/lib/python3.10/dist-packages/ \
+    && python -c "import MultiScaleDeformableAttention as m; print('MSDA extension loads against', __import__('torch').__version__)"
 
 # Import the handler's whole dependency graph at build time, so a missing module
 # or a bad pin surfaces here rather than as a 250-second timeout in the app. The
