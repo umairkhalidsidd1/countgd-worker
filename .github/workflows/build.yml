@@ -47,8 +47,15 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/countgd-worker:latest
-            ghcr.io/${{ github.repository_owner }}/countgd-worker:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/countgd:latest
+            ghcr.io/${{ github.repository_owner }}/countgd:${{ github.sha }}
+          # Links the package to this repository, so it inherits the repo's
+          # visibility on first publish. The earlier `countgd-worker` package was
+          # created while the repo was private and kept that visibility even after
+          # the repo went public — GitHub does not retro-apply it, so this
+          # publishes under a fresh name instead.
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
           provenance: false
 
       - name: Report size
