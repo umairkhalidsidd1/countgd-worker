@@ -248,15 +248,19 @@ def preprocess(transform, image, input_prompts = None):
 
     return input_image, input_image_exemplar, exemplar
 
-def get_boxes_from_prediction(model_output, text, keywords = ""):
+def get_boxes_from_prediction(model_output, text, keywords = "", conf_thresh = None):
+    # conf_thresh=None keeps every existing caller on CONF_THRESH exactly as
+    # before; only a caller that passes a value gets different behaviour.
+    if conf_thresh is None:
+        conf_thresh = CONF_THRESH
     logits = model_output["pred_logits"].sigmoid()[0][:, :]
     boxes = model_output["pred_boxes"][0]
-    box_mask = logits.max(dim=-1).values > CONF_THRESH
+    box_mask = logits.max(dim=-1).values > conf_thresh
     boxes = boxes[box_mask, :].cpu().numpy()
     logits = logits[box_mask, :].cpu().numpy()
     return boxes, logits
 
-def predict(model, transform, image, text, prompts, device):
+def predict(model, transform, image, text, prompts, device, conf_thresh = None):
     keywords = "" # do not handle this for now
     input_image, input_image_exemplar, exemplar = preprocess(transform, image, prompts)
 
@@ -274,7 +278,7 @@ def predict(model, transform, image, text, prompts, device):
             )
         
     keywords = ""
-    return get_boxes_from_prediction(model_output, text, keywords)
+    return get_boxes_from_prediction(model_output, text, keywords, conf_thresh)
 
 examples = [
     ["strawberry.jpg", "strawberry", {"image": "strawberry.jpg"}],

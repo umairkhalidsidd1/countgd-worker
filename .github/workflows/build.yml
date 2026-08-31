@@ -46,8 +46,13 @@ jobs:
           # the time for an image that can never be scheduled.
           platforms: linux/amd64
           push: true
+          # Only main may move :latest — the live endpoint's cold workers pull
+          # whatever :latest points at, so a branch build publishing it would
+          # put unvalidated code straight into production. Branch builds get a
+          # branch-named tag plus the immutable sha tag; the endpoint is always
+          # switched to a validated sha tag, never to a moving one.
           tags: |
-            ghcr.io/${{ github.repository_owner }}/countgd:latest
+            ghcr.io/${{ github.repository_owner }}/countgd:${{ github.ref_name == 'main' && 'latest' || github.ref_name }}
             ghcr.io/${{ github.repository_owner }}/countgd:${{ github.sha }}
           # Links the package to this repository, so it inherits the repo's
           # visibility on first publish. The earlier `countgd-worker` package was
