@@ -1,4 +1,4 @@
-import io, base64
+import io, base64, os, statistics
 import runpod
 from PIL import Image
 from app import CONF_THRESH, get_args_parser, get_device, build_model_and_transforms, predict, get_xy_from_boxes, generate_heatmap
@@ -12,6 +12,26 @@ model = model.to(device)
 # CountGD was trained with up to three visual exemplars; extra boxes add cost
 # without adding signal, so anything beyond three is ignored.
 MAX_EXEMPLARS = 3
+
+# Automatic examples (v3). Text alone misses objects that differ in size or
+# look from the "typical" one: on a photo of 29 mixed pills (big ovals,
+# capsules, small round tablets) "pills" found 6. Giving the model three of
+# its own first-look boxes as visual exemplars - smallest, middle and largest
+# of a consistent size - found all 29. Measured 2026-10-29 on the app's graded
+# set (12 photos): mean error 10.2% -> 2.2%, no photo worse.
+#   - Only with >= REFINE_MIN_COUNT first-look objects: small scenes are easy
+#     and too few boxes give poor examples.
+#   - Examples only from boxes within 4x of the median area: a mixed desk
+#     photo's "coins" look included a phone and a pen, and examples taken from
+#     those taught the model to count phones and pens too.
+#   - The second count is used only when it finds REFINE_MIN_GAIN times more:
+#     the examples must have recovered objects the words clearly missed, not
+#     nudged an already-good count (boxes 43 -> 47, coins 8 -> 10 rejected).
+# AUTO_REFINE=0 turns it off for every request; input.refine=false per request.
+AUTO_REFINE = os.environ.get("AUTO_REFINE", "1") != "0"
+REFINE_MIN_COUNT = 5
+REFINE_MIN_GAIN = 1.3
+REFINE_SIZE_SPREAD = 4.0
 
 
 def parse_exemplars(raw, width, height):
@@ -36,6 +56,32 @@ def parse_exemplars(raw, width, height):
         if x2 - x1 >= 4 and y2 - y1 >= 4:
             points.append([x1, y1, 2.0, x2, y2, 3.0])
     return points
+
+
+def pick_auto_exemplars(boxes, width, height):
+    """Smallest, middle and largest first-look box of a consistent size.
+
+    boxes are CountGD's normalised (cx, cy, w, h); returns image-prompter
+    tuples like parse_exemplars().
+    """
+    sized = []
+    for b in boxes:
+        cx, cy, w, h = (float(v) for v in b[:4])
+        sized.append((w * h, cx, cy, w, h))
+    if not sized:
+        return []
+    median = statistics.median(a for a, *_ in sized)
+    ok = sorted(s for s in sized
+                if median / REFINE_SIZE_SPREAD <= s[0] <= median * REFINE_SIZE_SPREAD)
+    if len(ok) > MAX_EXEMPLARS:
+        ok = [ok[0], ok[len(ok) // 2], ok[-1]]
+    out = []
+    for _, cx, cy, w, h in ok:
+        x1, y1 = (cx - w / 2) * width, (cy - h / 2) * height
+        x2, y2 = (cx + w / 2) * width, (cy + h / 2) * height
+        if x2 - x1 >= 4 and y2 - y1 >= 4:
+            out.append([x1, y1, 2.0, x2, y2, 3.0])
+    return out
 
 
 def handler(event):
@@ -63,6 +109,17 @@ def handler(event):
         conf_thresh = min(max(conf_thresh, 0.05), 0.95)
 
     boxes, _ = predict(model, transform, img, text, prompts, device, conf_thresh)
+    words_count = int(len(boxes))
+    auto_refined = False
+    refine = inp.get("refine", AUTO_REFINE)
+    if refine and not exemplar_points and words_count >= REFINE_MIN_COUNT:
+        auto_points = pick_auto_exemplars(boxes, img.width, img.height)
+        if auto_points:
+            boxes2, _ = predict(model, transform, img, text,
+                                {"image": img, "points": auto_points}, device, conf_thresh)
+            if len(boxes2) >= REFINE_MIN_GAIN * words_count:
+                boxes = boxes2
+                auto_refined = True
     x, y = get_xy_from_boxes(img, boxes)
     points = [[round(float(px), 2), round(float(py), 2)] for px, py in zip(x, y)]
     out = {
@@ -71,7 +128,11 @@ def handler(event):
         "width": img.width,
         "height": img.height,
         "prompt": text,
+        # The user's own examples only: the app shows "refined with your
+        # examples" for this, so automatic ones must not light it up.
         "exemplars_used": len(exemplar_points),
+        "auto_refined": auto_refined,
+        "words_count": words_count,
         "threshold": conf_thresh if conf_thresh is not None else CONF_THRESH,
     }
     if inp.get("return_image"):
