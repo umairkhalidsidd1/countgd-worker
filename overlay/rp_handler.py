@@ -1,4 +1,4 @@
-import io, base64, os, statistics
+import copy, io, base64, os, re, statistics
 import runpod
 from PIL import Image
 from app import CONF_THRESH, get_args_parser, get_device, build_model_and_transforms, predict, get_xy_from_boxes, generate_heatmap
@@ -49,6 +49,68 @@ HARD_MIN_COUNT = 20
 HARD_RAISED = 0.30
 HARD_GUARD = 0.85
 WIDE_RATIO = 2.5
+
+
+# Glasses seen from the front (measured 2026-10-31 on 22 photos, 11 of them never
+# used to set this): the model boxes each lens, so one pair counts as two and a rack
+# reads nearly double. A box wider than PAIR_WHOLE_WIDE is a whole pair: lenses
+# inside it are dropped, and the lens boxes left are joined with the nearest box
+# beside them on the same row. Held-out mean error 34.6% -> 13.2%.
+# Only these words: "glasses" alone is left out, side by side drinking glasses would
+# halve. Skipped for user examples and a request with its own threshold.
+# PAIR_RULES=0 turns it off; input.pair_rules=false per request.
+PAIR_RULES = os.environ.get("PAIR_RULES", "1") != "0"
+PAIR_WORDS = re.compile(r"\b(sunglasses|eyeglasses|spectacles|eyewear)\b", re.I)
+PAIR_WHOLE_WIDE = 2.0
+PAIR_ROW = 0.4
+PAIR_REACH = 1.7
+
+# A word that finds nothing at the normal size can land a little bigger ("bullets" 0
+# -> 35 of 35 at 1000). Bigger is not better in general (at 1000 mean error rises,
+# at 1200 it collapses), so this runs only on an empty first look.
+# ZERO_RESCUE=0 turns it off; input.zero_rescue=false per request.
+ZERO_RESCUE = os.environ.get("ZERO_RESCUE", "1") != "0"
+RESCUE_SHORT_SIDE = 1000
+
+
+def sized_transform(short_side):
+    """The model's transform with a bigger working size (it shrinks to 800 x 1333)."""
+    t = copy.deepcopy(transform)
+    t.transforms[0].sizes = [short_side]
+    t.transforms[0].max_size = round(short_side * 1333 / 800)
+    return t
+
+
+def merge_pairs(boxes, width, height):
+    """One box per pair of glasses. Boxes are centre x, y, w, h, 0 to 1."""
+    px = [(b[0] * width, b[1] * height, b[2] * width, b[3] * height) for b in boxes.tolist()]
+    whole = [b for b in px if b[2] / b[3] >= PAIR_WHOLE_WIDE]
+    lenses = [b for b in px if b[2] / b[3] < PAIR_WHOLE_WIDE and not any(
+        abs(b[0] - a[0]) < a[2] / 2 and abs(b[1] - a[1]) < a[3] / 2 for a in whole)]
+
+    def nearest(i):
+        p, best, gap = lenses[i], None, None
+        for j, q in enumerate(lenses):
+            dx = abs(p[0] - q[0])
+            if (j != i and abs(p[1] - q[1]) <= PAIR_ROW * max(p[3], q[3])
+                    and dx <= PAIR_REACH * max(p[2], q[2]) and (gap is None or dx < gap)):
+                best, gap = j, dx
+        return best
+
+    near = [nearest(i) for i in range(len(lenses))]
+    used = set()
+    merged = list(whole)
+    for i, j in enumerate(near):
+        if j is not None and near[j] == i and i not in used and j not in used:
+            used |= {i, j}
+            a, b = lenses[i], lenses[j]
+            left, right = min(a[0] - a[2] / 2, b[0] - b[2] / 2), max(a[0] + a[2] / 2, b[0] + b[2] / 2)
+            merged.append(((left + right) / 2, (a[1] + b[1]) / 2, right - left, max(a[3], b[3])))
+    merged += [b for i, b in enumerate(lenses) if i not in used]
+    out = boxes[:len(merged)].copy()
+    for i, b in enumerate(merged):
+        out[i] = (b[0] / width, b[1] / height, b[2] / width, b[3] / height)
+    return out
 
 
 def raised_boxes(boxes, logits):
@@ -134,13 +196,20 @@ def handler(event):
         conf_thresh = min(max(conf_thresh, 0.05), 0.95)
 
     boxes, logits = predict(model, transform, img, text, prompts, device, conf_thresh)
+    sized = transform
+    rescued = False
+    if (inp.get("zero_rescue", ZERO_RESCUE) and len(boxes) == 0
+            and conf_thresh is None and not exemplar_points):
+        sized = sized_transform(RESCUE_SHORT_SIDE)
+        boxes, logits = predict(model, sized, img, text, prompts, device, conf_thresh)
+        rescued = len(boxes) > 0
     words_count = int(len(boxes))
     auto_refined = False
     refine = inp.get("refine", AUTO_REFINE)
     if refine and not exemplar_points and words_count >= REFINE_MIN_COUNT:
         auto_points = pick_auto_exemplars(boxes, img.width, img.height)
         if auto_points:
-            boxes2, _ = predict(model, transform, img, text,
+            boxes2, _ = predict(model, sized, img, text,
                                 {"image": img, "points": auto_points}, device, conf_thresh)
             if len(boxes2) >= REFINE_MIN_GAIN * words_count:
                 boxes = boxes2
@@ -153,6 +222,12 @@ def handler(event):
         if kept is not None:
             boxes = kept
             hard_route = "raised"
+    pairs_merged = 0
+    if (inp.get("pair_rules", PAIR_RULES) and conf_thresh is None and not exemplar_points
+            and PAIR_WORDS.search(text) and len(boxes)):
+        merged = merge_pairs(boxes, img.width, img.height)
+        pairs_merged = int(len(boxes) - len(merged))
+        boxes = merged
     x, y = get_xy_from_boxes(img, boxes)
     points = [[round(float(px), 2), round(float(py), 2)] for px, py in zip(x, y)]
     out = {
@@ -167,6 +242,8 @@ def handler(event):
         "auto_refined": auto_refined,
         "words_count": words_count,
         "hard_route": hard_route,
+        "pairs_merged": pairs_merged,
+        "rescued": rescued,
         "threshold": conf_thresh if conf_thresh is not None else CONF_THRESH,
     }
     if inp.get("return_image"):
