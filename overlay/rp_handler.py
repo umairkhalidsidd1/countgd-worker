@@ -40,12 +40,15 @@ REFINE_SIZE_SPREAD = 4.0
 # model pass, so it adds no time.
 # Guard: if that would remove more than 15% of the dots, the whole photo scores
 # low and they are real objects. Carrom pieces went 29 -> 1 without it.
-# Skipped when the v3 recount was used, for user examples, and for a request with
-# its own threshold. HARD_RULES=0 turns it off; input.hard_rules=false per request.
+# Skipped when the v3 recount was used, for user examples, for a request with its
+# own threshold, and for panoramas: objects there get little zoom and score low
+# (deer 28 -> 24 of 36). HARD_RULES=0 turns it off; input.hard_rules=false per
+# request.
 HARD_RULES = os.environ.get("HARD_RULES", "1") != "0"
 HARD_MIN_COUNT = 20
 HARD_RAISED = 0.30
 HARD_GUARD = 0.85
+WIDE_RATIO = 2.5
 
 
 def raised_boxes(boxes, logits):
@@ -144,7 +147,8 @@ def handler(event):
                 auto_refined = True
     hard_route = None
     if (inp.get("hard_rules", HARD_RULES) and conf_thresh is None and not exemplar_points
-            and not auto_refined and words_count >= HARD_MIN_COUNT):
+            and not auto_refined and words_count >= HARD_MIN_COUNT
+            and max(img.size) / min(img.size) < WIDE_RATIO):
         kept = raised_boxes(boxes, logits)
         if kept is not None:
             boxes = kept
