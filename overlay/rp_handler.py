@@ -34,6 +34,28 @@ REFINE_MIN_GAIN = 1.3
 REFINE_SIZE_SPREAD = 4.0
 
 
+# Weak dots on busy photos (measured 2026-10-31: 18 fresh photos, mean error
+# 18.6% -> 14.4%, none worse). With HARD_MIN_COUNT+ dots, drop those scoring under
+# HARD_RAISED: labels, caps and the bark side of logs score low. It is the same
+# model pass, so it adds no time.
+# Guard: if that would remove more than 15% of the dots, the whole photo scores
+# low and they are real objects. Carrom pieces went 29 -> 1 without it.
+# Skipped when the v3 recount was used, for user examples, and for a request with
+# its own threshold. HARD_RULES=0 turns it off; input.hard_rules=false per request.
+HARD_RULES = os.environ.get("HARD_RULES", "1") != "0"
+HARD_MIN_COUNT = 20
+HARD_RAISED = 0.30
+HARD_GUARD = 0.85
+
+
+def raised_boxes(boxes, logits):
+    """Boxes scoring above HARD_RAISED, or None if the guard says keep them all."""
+    keep = logits.max(axis=-1) > HARD_RAISED
+    if keep.all() or keep.sum() < HARD_GUARD * len(boxes):
+        return None
+    return boxes[keep]
+
+
 def parse_exemplars(raw, width, height):
     """[[x1,y1,x2,y2]...] in source-image pixels -> image-prompter box tuples.
 
@@ -108,7 +130,7 @@ def handler(event):
         # beats erroring for the same reason as parse_exemplars above.
         conf_thresh = min(max(conf_thresh, 0.05), 0.95)
 
-    boxes, _ = predict(model, transform, img, text, prompts, device, conf_thresh)
+    boxes, logits = predict(model, transform, img, text, prompts, device, conf_thresh)
     words_count = int(len(boxes))
     auto_refined = False
     refine = inp.get("refine", AUTO_REFINE)
@@ -120,6 +142,13 @@ def handler(event):
             if len(boxes2) >= REFINE_MIN_GAIN * words_count:
                 boxes = boxes2
                 auto_refined = True
+    hard_route = None
+    if (inp.get("hard_rules", HARD_RULES) and conf_thresh is None and not exemplar_points
+            and not auto_refined and words_count >= HARD_MIN_COUNT):
+        kept = raised_boxes(boxes, logits)
+        if kept is not None:
+            boxes = kept
+            hard_route = "raised"
     x, y = get_xy_from_boxes(img, boxes)
     points = [[round(float(px), 2), round(float(py), 2)] for px, py in zip(x, y)]
     out = {
@@ -133,6 +162,7 @@ def handler(event):
         "exemplars_used": len(exemplar_points),
         "auto_refined": auto_refined,
         "words_count": words_count,
+        "hard_route": hard_route,
         "threshold": conf_thresh if conf_thresh is not None else CONF_THRESH,
     }
     if inp.get("return_image"):
